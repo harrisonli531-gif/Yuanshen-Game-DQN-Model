@@ -381,200 +381,216 @@ def get_reward(prev_state, next_state, p1_win_bool, p2_win_bool):
         if not p2_win_bool:
             reward += 3
     return reward
-    
 
-
-
-        
-#set up game values
-
-hub.other_values["round_ num"] = 1
-prev_played_card = -1
-
-#draw hand for player
-for i in range(5):
-    drawn_card = random.choice(hub.p1_deck)
-    hub.p1_hand.append(drawn_card)
-    hub.p1_deck.remove(drawn_card)
-
-
-#draw hand for opponent
-for i in range(5):
-    drawn_card = random.choice(hub.p2_deck)
-    hub.p2_hand.append(drawn_card)
-    hub.p2_deck.remove(drawn_card)
-
-#set up replay buffer
-replay_buffer = buffer.replay_buffer(1000)
-
-
-while hub.p1_values["hp"] > 0 and hub.p2_values["hp"] > 0:
-    hub.print_space()
-    print(f"Round: {hub.other_values["round_ num"]})")
-    hub.print_space()
-    #input("Enter any key to continue")
-    
-
-    #Start phase: reveal board state, start of round effects, etc
-
-
-
-
-    '''
-    try:
-        hub.p1_misc_effects["pre_action"]()
-    except:
-        pass
-
-    try:
-        hub.p2_misc_effects["pre_action"]()
-    except:
-        pass
-    '''
-    resolve_misc_triggers("pre_action", False)
-
-    #GET PREV_STATE
-    prev_state = torch.tensor([hub.p1_values["hp"], hub.p2_values["hp"], hub.other_values["round_ num"], prev_played_card, get_mod_values(hub.p1_values, "pow_mod"), get_mod_values(hub.p1_values, "dmg_mod")], dtype=torch.float32)
-
-
-    #####Action phase: player choses a card to play
-    round_phase = "Action Phase"
-    p1_chosen_card = random.choice(hub.p1_hand) #PICK CARD HERE 
-    hub.p1_hand.pop(hub.p1_hand.index(p1_chosen_card))
-
-    
-    card_played_num = p1_char.card_id_to_number[p1_chosen_card.card_id] 
-
-    
-    hub.p1_values["chosen_card"] = p1_chosen_card
-    p2_chosen_card = random.choice(hub.p2_hand) #chooses a random card for the opponent played card
-    hub.p2_values["chosen_card"] = p2_chosen_card
-    hub.p2_hand.pop(hub.p2_hand.index(p2_chosen_card))
-    p1_board_text, p2_board_text = " ", " "
-    resolve_misc_triggers("post_action", True)
-
-    #print(hub.p2_values["pow_mod"])
-    
-   
-    resolve_misc_triggers("pre_determine_winner", False) #determine winner before revealing played cards
-    hub.win_bools["p1"], hub.win_bools["p2"] = determine_winner()
-
-    ####Reveal phase: played cards with modifers are revealed
-    #creating the proper display text for played cards
-    round_phase = "Reveal Phase"
-
-    #display the chosen cards and their mods
-    p1_pow_mod = get_mod_values(hub.p1_values, "pow_mod")
-    if p1_pow_mod < 0:
-        #don't display "+" if power mod is negative
-        p1_board_text = p1_chosen_card.display_name + "[" + p1_chosen_card.speed + "]" + "[" + str(p1_chosen_card.power) + "]" + "(" + str(p1_pow_mod) + ")" 
-    else:
-        p1_board_text = p1_chosen_card.display_name + "[" + p1_chosen_card.speed + "]" + "[" + str(p1_chosen_card.power) + "]" + "(+" + str(p1_pow_mod) + ")" 
-
-    p2_pow_mod = get_mod_values(hub.p2_values, "pow_mod")
-    if p2_pow_mod < 0:
-        p2_board_text = p2_chosen_card.display_name + "[" + p2_chosen_card.speed + "]" + "[" + str(p2_chosen_card.power) + "]" + "(" + str(p2_pow_mod) + ")" 
-    else:
-        p2_board_text = p2_chosen_card.display_name + "[" + p2_chosen_card.speed + "]" + "[" + str(p2_chosen_card.power) + "]" + "(+" + str(p2_pow_mod) + ")"
-
-    display_board_state()
-    input("Enter any key to continue")
-    
-    
-    
-    
-    ####Resolution phase: card effects are executed, winner is determined, damage is dealt, etc.
-    round_phase = "Resolution Phase"
-    
-    
-    resolve_misc_triggers("pre_resolve_cards", False)
-
-   
-    resolve_cards(hub.win_bools["p1"], hub.win_bools["p2"])
-
-    resolve_misc_triggers("pre_deal_dmg", False)
-    deal_dmg() 
-
- 
-
-    #creating proper display text based on win/lose
-    p1_board_text = get_resolution_text(p1_char, p1_chosen_card, hub.win_bools["p1"]) 
-    p2_board_text = get_resolution_text(p2_char, p2_chosen_card, hub.win_bools["p2"]) 
-
-    hub.p1_values["queued_dmg"] = None
-    hub.p2_values["queued_dmg"] = None
-
-
-    resolve_misc_triggers("post_resolution", False)
-
-    display_board_state()
-
-    resolve_misc_triggers("post_resolution_board_reveal", False)
-
-    #GET NEXT STATE, PREV_PLAYED_CARD, NEXT_HAND, REWARD
-    prev_played_card = p1_char.card_id_to_number[p1_chosen_card.card_id]
-    next_hand = [p1_char.card_id_to_number[card.card_id] for card in hub.p1_hand]
-    next_state = torch.tensor([hub.p1_values["hp"], hub.p2_values["hp"], hub.other_values["round_ num"], prev_played_card, get_mod_values(hub.p1_values, "pow_mod"), get_mod_values(hub.p1_values, "dmg_mod")], dtype=torch.float32)
-    reward = get_reward(prev_state, next_state, hub.win_bools["p1"], hub.win_bools["p2"])
-    replay_buffer.push(prev_state, reward, card_played_num, next_state, next_hand, hub.p1_values["hp"] <= 0 or hub.p2_values["hp"] <= 0)
-  
-    p1_board_text = " "
-    p2_board_text = " "
-
-    #####End phase: resolves end of turn effects#####
-    if hub.p1_values["hp"] < 0 or hub.p2_values["hp"] < 0: #break out of program, stop end phase if either character is dead/fallen
-        break
-   
-    p1_board_text, p2_board_text = " ", " "
-    resolve_misc_triggers("pre_end", True)
-
-    if (not p1_board_text is None and p1_board_text != " ") or (not p2_board_text is None and p2_board_text != " "):
-        round_phase = "End Phase"
-        display_board_state()
-        #input("Enter any key to continue")
-
-    
-
-    p1_board_text = None
-    p2_board_text = None
-    
-    #increase round count and reset temp modifier, assigns the card played this turn as "previously played card"
-    hub.other_values["round_ num"] += 1
-
-    draw_bool = True
-    try:
-        draw_bool = hub.p1_misc_effects["draw_phase"]()
-    except:
-        pass
-    if draw_bool:
+def draw_starting_hands():
+    '''Draws the starting hands for both players'''
+    # Draw hand for player
+    for i in range(5):
         drawn_card = random.choice(hub.p1_deck)
         hub.p1_hand.append(drawn_card)
         hub.p1_deck.remove(drawn_card)
 
-    #draw a card for opponent
-    draw_bool = True
-    try:
-        draw_bool = hub.p2_misc_effects["draw_phase"]()
-    except:
-        pass
-    if draw_bool:
+    # Draw hand for opponent
+    for i in range(5):
         drawn_card = random.choice(hub.p2_deck)
         hub.p2_hand.append(drawn_card)
         hub.p2_deck.remove(drawn_card)
 
-    apply_queued_mods()
-    clean_up_step()
+def reset_game_state():
+    '''Resets the game state for a new episode'''
+    hub.p1_values["hp"] = 25
+    hub.p2_values["hp"] = 25
+    hub.p1_hand.clear()
+    hub.p2_hand.clear()
+    hub.p1_deck.clear()
+    hub.p2_deck.clear()
+    hub.p1_deck[:] = [card for card, count in p1_char.deck_list for _ in range(count)]
+    hub.p2_deck[:] = [card for card, count in p2_char.deck_list for _ in range(count)]
+    hub.other_values["round_ num"] = 1
+    hub.p1_values["pow_mod"][:] = [[+0, 1000]]
+    hub.p1_values["dmg_mod"][:] = [[+0, 1000]]
+    hub.p2_values["pow_mod"][:] = [[+0, 1000]]
+    hub.p2_values["dmg_mod"][:] = [[+0, 1000]]
+    draw_starting_hands()
 
-if hub.p1_values["hp"] > 0 and hub.p2_values["hp"] <= 0:
-    hub.print_space()
-    print(f"{p1_char_name} wins!")
-    hub.print_space()
-elif hub.p1_values["hp"] <= 0 and hub.p2_values["hp"] > 0:
-    hub.print_space()
-    print(f"{p2_char_name} wins!") 
-    hub.print_space()
-else:
-    hub.print_space()
-    print("Tie!")
-    hub.print_space()
-replay_buffer.print()
+
+        
+#SET UP GAME VALUES
+
+draw_starting_hands()
+hub.other_values["round_ num"] = 1
+prev_played_card = -1
+
+
+
+#sSET UP TRAINING RELATED VALUES
+replay_buffer = buffer.replay_buffer(1000)
+episodes = 10
+
+for i in range(episodes):
+    print(f"Episode {i+1} of {episodes}")
+
+    while hub.p1_values["hp"] > 0 and hub.p2_values["hp"] > 0:
+        hub.print_space()
+        print(f"Round: {hub.other_values["round_ num"]})")
+        hub.print_space()
+        #input("Enter any key to continue")
+        
+
+        #Start phase: reveal board state, start of round effects, etc
+
+
+
+
+        '''
+        try:
+            hub.p1_misc_effects["pre_action"]()
+        except:
+            pass
+
+        try:
+            hub.p2_misc_effects["pre_action"]()
+        except:
+            pass
+        '''
+        resolve_misc_triggers("pre_action", False)
+
+        #GET PREV_STATE
+        prev_state = torch.tensor([hub.p1_values["hp"], hub.p2_values["hp"], hub.other_values["round_ num"], prev_played_card, get_mod_values(hub.p1_values, "pow_mod"), get_mod_values(hub.p1_values, "dmg_mod")], dtype=torch.float32)
+
+
+        #####Action phase: player choses a card to play
+        round_phase = "Action Phase"
+        p1_chosen_card = random.choice(hub.p1_hand) #PICK CARD HERE 
+        hub.p1_hand.pop(hub.p1_hand.index(p1_chosen_card))
+
+        
+        card_played_num = p1_char.card_id_to_number[p1_chosen_card.card_id] 
+
+        
+        hub.p1_values["chosen_card"] = p1_chosen_card
+        p2_chosen_card = random.choice(hub.p2_hand) #chooses a random card for the opponent played card
+        hub.p2_values["chosen_card"] = p2_chosen_card
+        hub.p2_hand.pop(hub.p2_hand.index(p2_chosen_card))
+        p1_board_text, p2_board_text = " ", " "
+        resolve_misc_triggers("post_action", True)
+
+        #print(hub.p2_values["pow_mod"])
+        
+    
+        resolve_misc_triggers("pre_determine_winner", False) #determine winner before revealing played cards
+        hub.win_bools["p1"], hub.win_bools["p2"] = determine_winner()
+
+        ####Reveal phase: played cards with modifers are revealed
+        #creating the proper display text for played cards
+        round_phase = "Reveal Phase"
+
+        #display the chosen cards and their mods
+        p1_pow_mod = get_mod_values(hub.p1_values, "pow_mod")
+        if p1_pow_mod < 0:
+            #don't display "+" if power mod is negative
+            p1_board_text = p1_chosen_card.display_name + "[" + p1_chosen_card.speed + "]" + "[" + str(p1_chosen_card.power) + "]" + "(" + str(p1_pow_mod) + ")" 
+        else:
+            p1_board_text = p1_chosen_card.display_name + "[" + p1_chosen_card.speed + "]" + "[" + str(p1_chosen_card.power) + "]" + "(+" + str(p1_pow_mod) + ")" 
+
+        p2_pow_mod = get_mod_values(hub.p2_values, "pow_mod")
+        if p2_pow_mod < 0:
+            p2_board_text = p2_chosen_card.display_name + "[" + p2_chosen_card.speed + "]" + "[" + str(p2_chosen_card.power) + "]" + "(" + str(p2_pow_mod) + ")" 
+        else:
+            p2_board_text = p2_chosen_card.display_name + "[" + p2_chosen_card.speed + "]" + "[" + str(p2_chosen_card.power) + "]" + "(+" + str(p2_pow_mod) + ")"
+
+        display_board_state()
+        input("Enter any key to continue")
+        
+        
+        
+        
+        ####Resolution phase: card effects are executed, winner is determined, damage is dealt, etc.
+        round_phase = "Resolution Phase"
+        
+        
+        resolve_misc_triggers("pre_resolve_cards", False)
+
+    
+        resolve_cards(hub.win_bools["p1"], hub.win_bools["p2"])
+
+        resolve_misc_triggers("pre_deal_dmg", False)
+        deal_dmg() 
+
+    
+
+        #creating proper display text based on win/lose
+        p1_board_text = get_resolution_text(p1_char, p1_chosen_card, hub.win_bools["p1"]) 
+        p2_board_text = get_resolution_text(p2_char, p2_chosen_card, hub.win_bools["p2"]) 
+
+        hub.p1_values["queued_dmg"] = None
+        hub.p2_values["queued_dmg"] = None
+
+
+        resolve_misc_triggers("post_resolution", False)
+
+        display_board_state()
+
+        resolve_misc_triggers("post_resolution_board_reveal", False)
+
+        #GET NEXT STATE, PREV_PLAYED_CARD, NEXT_HAND, REWARD
+        prev_played_card = p1_char.card_id_to_number[p1_chosen_card.card_id]
+        next_hand = [p1_char.card_id_to_number[card.card_id] for card in hub.p1_hand]
+        next_state = torch.tensor([hub.p1_values["hp"], hub.p2_values["hp"], hub.other_values["round_ num"], prev_played_card, get_mod_values(hub.p1_values, "pow_mod"), get_mod_values(hub.p1_values, "dmg_mod")], dtype=torch.float32)
+        reward = get_reward(prev_state, next_state, hub.win_bools["p1"], hub.win_bools["p2"])
+        replay_buffer.push(prev_state, reward, card_played_num, next_state, next_hand, hub.p1_values["hp"] <= 0 or hub.p2_values["hp"] <= 0)
+    
+        p1_board_text = " "
+        p2_board_text = " "
+
+        #####End phase: resolves end of turn effects#####
+        if hub.p1_values["hp"] < 0 or hub.p2_values["hp"] < 0: #break out of program, stop end phase if either character is dead/fallen
+            break
+    
+        p1_board_text, p2_board_text = " ", " "
+        resolve_misc_triggers("pre_end", True)
+
+        if (not p1_board_text is None and p1_board_text != " ") or (not p2_board_text is None and p2_board_text != " "):
+            round_phase = "End Phase"
+            display_board_state()
+            #input("Enter any key to continue")
+
+        
+
+        p1_board_text = None
+        p2_board_text = None
+        
+        #increase round count and reset temp modifier, assigns the card played this turn as "previously played card"
+        hub.other_values["round_ num"] += 1
+
+        draw_bool = True
+        try:
+            draw_bool = hub.p1_misc_effects["draw_phase"]()
+        except:
+            pass
+        if draw_bool:
+            drawn_card = random.choice(hub.p1_deck)
+            hub.p1_hand.append(drawn_card)
+            hub.p1_deck.remove(drawn_card)
+
+        #draw a card for opponent
+        draw_bool = True
+        try:
+            draw_bool = hub.p2_misc_effects["draw_phase"]()
+        except:
+            pass
+        if draw_bool:
+            drawn_card = random.choice(hub.p2_deck)
+            hub.p2_hand.append(drawn_card)
+            hub.p2_deck.remove(drawn_card)
+
+        apply_queued_mods()
+        clean_up_step()
+
+
+    #Reset the game state
+    reset_game_state()
+    prev_played_card = -1
+
+    replay_buffer.print()
+    
