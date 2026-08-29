@@ -190,7 +190,7 @@ def resolution_text(card_id, base_dmg, win_bool):
  
 
 ### DECK ###
-deck_list = [(ocean_swell_step, 8), (flutter_of_frost, 7) , (icetide_tempo, 7) , (roiling_rime, 4) , (vengeance, 4) ]
+deck_list = [(ocean_swell_step, 8), (flutter_of_frost, 7) , (icetide_tempo, 7) , (roiling_rime, 4) , (vengeance, 4), (glacial_illumination, 0)]
 deck = [card for card, count in deck_list for _ in range(count)]
 
 #BUGS

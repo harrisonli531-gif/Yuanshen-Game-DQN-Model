@@ -413,6 +413,19 @@ def reset_game_state():
     hub.p2_values["dmg_mod"][:] = [[+0, 1000]]
     draw_starting_hands()
 
+def pick_card_with_ai(current_state, model):
+    '''Picks a card for the player using the AI model'''
+    #get q values for all cards in deck
+    q_values = model(current_state)
+    #iterate through the player's hand and find the card with the highest q value (from the generated q values)
+    best_card_index = None
+    best_q_value = -float('inf')
+    for card in hub.p1_hand:
+        if q_values[p1_char.card_id_to_number[card.card_id]] > best_q_value:
+            best_q_value = q_values[p1_char.card_id_to_number[card.card_id]]
+            best_card_index = hub.p1_hand.index(card)
+    #return the card corresponding to the best action
+    return best_card_index
 
         
 #SET UP GAME VALUES
@@ -423,9 +436,11 @@ prev_played_card = -1
 
 
 
-#sSET UP TRAINING RELATED VALUES
+#SET UP TRAINING RELATED VALUES
 replay_buffer = buffer.replay_buffer(1000)
 episodes = 10
+model = om.opponent_model(len(p1_char.deck_list)) #set up the model based on the number of unique cards in the player's deck
+loss_function = nn.MSELoss()
 
 for i in range(episodes):
     print(f"Episode {i+1} of {episodes}")
@@ -439,20 +454,6 @@ for i in range(episodes):
 
         #Start phase: reveal board state, start of round effects, etc
 
-
-
-
-        '''
-        try:
-            hub.p1_misc_effects["pre_action"]()
-        except:
-            pass
-
-        try:
-            hub.p2_misc_effects["pre_action"]()
-        except:
-            pass
-        '''
         resolve_misc_triggers("pre_action", False)
 
         #GET PREV_STATE
@@ -461,7 +462,7 @@ for i in range(episodes):
 
         #####Action phase: player choses a card to play
         round_phase = "Action Phase"
-        p1_chosen_card = random.choice(hub.p1_hand) #PICK CARD HERE 
+        p1_chosen_card = hub.p1_hand[pick_card_with_ai(prev_state, model)] #PICK CARD HERE 
         hub.p1_hand.pop(hub.p1_hand.index(p1_chosen_card))
 
         
@@ -591,6 +592,7 @@ for i in range(episodes):
     #Reset the game state
     reset_game_state()
     prev_played_card = -1
-
     replay_buffer.print()
+
+    #calculate loss and perform back progagation
     
