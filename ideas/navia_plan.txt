@@ -1,0 +1,32 @@
+Navia
+
+Card ideas:
+
+Passive:
+- Gains a rosula amunition shell every turn
+Shotgun[S][3]:
+- Consumes all shells for +2 power each. Deals damage based on how much power she won by. Deals [1, 2, 3, 6, 9, 11] based on [1, 2, 3, 4, 5, 6+] power difference
+
+Blunt Refusal[M][5]:
+deals 3 damage
+"Sometimes, when someone keeps insisting even when you've already said no, you just gotta give them a little incentive!"
+
+A Lady's Rule for Courteous Distance:
+- Gracefully evades, reducing their damage by 2 for the next two turns. Also gains a shotgun shell
+
+The Spina President's Finnese:
+- reducing damage dealt this turn by up to 5. If the opponent's card deals no damage, she attack and forces Opponent discards a random card from their hand
+
+
+Geo rose thorns burst from the ground, holding the opponent in place. Their next attack gets -2 power
+"Hold still for a moment, will ya?"
+
+
+Effect ideas:
+Gains a shotgun shell and reduces some damage dealt to her
+
+Something else:
+
+Consumes all shells and deals [1, 3, 6, 9] damage based on [1, 2, 3, 4+] shells consumsed
+
+Name Ideas:

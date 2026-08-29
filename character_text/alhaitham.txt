@@ -1,0 +1,67 @@
+Alhaitham
+
+Description:
+A scholar from the Sumeru Akademiya, Alhaitham has mastery over light and mirrors and hosts a versatile arsenal. Whether it be equalizing with his opponent in terms of hp with an 'Elucidation' or 
+removing an opponent's "superfluous" modifiers with a 'Scrutiny', Alhaitham has a card for every situation. His passive allows him to create 'chisel mirror reflections', weaker copies of cards he has 
+already played, in his hand to establish card advantage over his foe. When these lesser copies become no longer useful, they can be discarded through his ultimate and be turned into raw damage, to 
+pack a finishing blow.
+
+Passive:
+
+> Replication: the Fetters of Theory
+Whenever Alhaitham plays a non-ultimate card, he has a 50% of creating a 'chisel mirror reflection' copy of it in his hand. chisel mirror reflections have -2 power and cannot trigger this passive.
+
+    ~ The validity of research demands replication. Repetition reveals the truth.
+
+
+Cards:
+
+> Debate[M][5]:
+With a wave of his hand, Alhaitham creates a mirror projection attack that deals 4 damage. If the opponent's chosen card is slow, Alhaitham charges for a moment first, granting this card +2 power. 
+
+    ~ "If a researcher makes wisdom their goal, then they should be prepared to make an enemy of every word they read. Thus it is only through debate, can they avoid bias."
+
+
+> Elucidation[F][4]:
+Alhaitham slashes with his twin scimitars, dealing 2 damage. If his opponent has more hp than him, he slashes again, dealing another 1 damage. Damage modifiers apply to each instance separately. 
+
+    ~ "A scholar's words mean nothing if they cannot provide elucidation over their findings. So if you still do not understand, allow me to explain again..."
+
+
+> Causality[F][5]:
+Alhaitham deals 1 damage and marks his opponent with a prismatic shatterpoint. If Alhaitham deals damage again next round, the prismatic shatterpoint explodes and deals 4 damage. 
+
+    ~ "Everything is linked together by causality. All I have to do is follow the thread back to the beginning and deal with the root factors. Everything else tends to resolve itself."
+
+
+> Refutation[F][3]:
+Alhaitham prepares a flawless rebuttal to his opponent's attack. If his opponent's card deals damage, he creates a light shield and mitigates up to 3 damage per attack. Otherwise, he creates a rain 
+of light scimitars and deals 3 damage.
+
+    ~ "Every refutation is a test of claims. Only through testing can assertions be distilled into truth."
+
+
+> Scrutiny[S][7]:
+Alhaitham lays bare his opponent, removing all of their power and damage modifiers for one turn.
+
+    ~ "How do you really hold up under scrutiny?"
+
+
+> Intuition[M][6]:
+[Flavor more] Alhaitham gets +3 power and +1 damage next round.
+
+    ~ "Intuition provides the basis from which knowledge may flow."
+
+
+> Sagacity[S][8]:
+Reading the battle as an open book, Alhaitham analyzes the situation and adapts his approach to the fight accordingly. He discards a card from his hand and creates a new card in its place based on 
+what was discarded. If a damaging card was discarded, he creates an 'Intuition'. If a nondamaging card was discarded, he creates a 'Debate'.
+
+    ~ For many, the books Alhaitham reads bring nothing but confusion; likewise, he discerns meaning in battles where others see chaos. Sagacity allows for clarity amidst disarray.
+
+
+> [Ultimate] Synthesis: the Demonstration of Principle[F][3]:
+Alhaitham uses his chisel mirrors to create a field of refracting light. This discards all chisel mirror reflection cards in hand and deals X instances of 1 damage where X is one plus the number of 
+chisel mirror reflections discarded this way. Damage modifiers apply to each instance separately. 
+
+    ~ "The synthesis of theory into reality is the ultimate display of a scholar's mastery over their domain."

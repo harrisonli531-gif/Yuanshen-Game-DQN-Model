@@ -1,0 +1,47 @@
+Furina 
+
+Passives:
+
+> Let the People Rejoice:
+Furina invokes the spirit of revelry in the audience. Every time she creates a spectacle through winning a round in both speed and power,
+she gains one stack of fanfare. She gains [+1/+2/+3/+4] power for every [1/2/3/4+] stacks she has.
+
+  ~ "Let the world come alive!"
+
+
+> Soliloquy that Remains Unheard:
+Whenever Furina loses a round, she has a 25% chance to heal 2 hp.
+
+  ~ For all waters in Fontaine return to the Fountain of Lucine, such too are the tears of this "god" of justice.
+
+
+Cards:
+
+> Endless Waltz[M][7]:
+Deals 1 damage plus X where X is the number of times Endless Waltz has won previously.
+
+    ~ 'Round and 'round she goes. Resplendent and dazzling. Interminable and alone...
+
+
+> The Star's Solicitation[M][4]:
+Furina sings a high note and deals [2/4/+5/+6] damage if she has [0/1/2/3+] fanfare stacks.
+
+    ~ "The world is but a stage / Why cry when you can laugh instead / For laughter is humanity's preserve!"
+
+
+> Spotlight's on Me[F][6]:
+No matter the outcome of the battle, Furina manages to make herself the star of the show, dealing 1 damage if she wins and healing 1 hp if she loses.
+
+    ~ While some actors insatiably crave the audience's thunderous applause, others yet still secretly yearn for the day in which they may leave the limelight behind for a quieter, simpler life. 
+
+
+> Encore[S][4]:
+With a bow and flourish of the hat, she regains another one of her tricks. Draw a random card that are previously played.
+
+    ~ "You want an encore from THE Furina de Fontaine? Well only if you insist, hehe!"
+
+
+> [Ultimate] Curtain Call[S][4]:
+Creating a hydro guillotine strong enough to render divinity asunder and cast names into obscurity, Furina deals 8 damage to her opponent.
+
+    ~ Like a spotlight, the guillotine looms over the sinner, granting one final brilliant moment. 

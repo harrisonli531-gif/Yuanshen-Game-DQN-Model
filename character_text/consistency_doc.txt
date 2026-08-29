@@ -1,0 +1,9 @@
+To maintain consistency:
+
+pre_action
+- Processes that must occur before display_board_state() for action phase
+
+post_action 
+- Processes that must occur after display_board_state() for action phase
+
+etc.

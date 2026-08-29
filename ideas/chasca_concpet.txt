@@ -1,0 +1,31 @@
+Chasca:
+Need names for cards
+Passive:
+
+Peacemaker of the Flower-Feather Clan:
+Chasca begins the game with 6 shadowhunt shells. Whenever she deals damage with a card, she will the next shell in the queue, imbuing that attack with additional effects based on the element of the shell. Shells are fired left to right and if she ends a round with 0 shells, she will reload 6 shells at the start of the next round.
+
+Pyro: This attack deals +1 damage
+Cyro: This attack has +2 power
+Electro: Discard a card, then draw a card if this attack is successful
+Hydro: Chasca heals 2 hp
+Anemo: Has the attributes of the last fired shell
+
+Cards
+Single Shot[F][3]:
+Chasca fires a shot, dealing 3 damage.
+
+Charged Shot[M][5]:
+Deals 4 damage
+
+Fan the Hammer[M][6]:
+Consumes all shells and 50% chance to deal 2 damage for each shell consumed.
+
+Spin the Barrel[S][9]:
+Scrambles her shell order
+
+Overload[S][4]:
+Chasca overloads her cannon with the element of the current active shell, increasing the damage of all shells fired with that element by 1 for the rest of the game or until she overloads her cannon with another element. She then fires a shot dealing 1 damage.
+
+Ultimate Fatal Round:
+Deals damage. All remaining shadow hunt shells in magazine become the same element as the one fired.

@@ -1,0 +1,47 @@
+Eula
+
+Passives:
+
+> Dance of Aphros:
+Eula starts the game with a glacial seal, the Lawrence Clan's family crest. Whenever she wins with a card that she hasn't played yet, it gains one stack. Once it
+reaches four stacks, it transforms and she creates a 'Glacial Illumination' card in her hand. Once she plays 'Glacial Illumination', it transforms back and resets its stacks.
+
+  ~ A legacy of tyranny reforged into true 'noble obligation'.
+
+
+Cards:
+
+> Ocean Swell Step[F][6]:
+ Eula performs an upwards slash, dealing 1 damage.
+
+    ~ No evildoers shall escape this rising tide.  
+
+
+> Flutter of Frost[F][3]:
+With an elegant whirlwind of strikes emboldened by cryo, she deals 2 damage. This deals +1 damage if she possesses any glacial seal stacks. 
+
+    ~ To be free and unbound like the ocean spray-yes, that would be all one needs.
+
+
+> Icetide Tempo[F][2]:
+With the poise and grace of a dancer, Eula deals 1 damage and builds momentum, gaining a damage bonus that decays from +2 to +1 over two rounds. 
+
+    ~ The rise and fall of her greatsword mirror the crash of icy waves. 
+
+
+> Roiling Rime[S][3]:
+Brandishing her great sword, Eula creates a fierce burst of cryo and frost. This card gets +4 power if she has 3 or more glacial seal stacks. It deals 2 damage plus +1 damage for every 2 missing hp her opponent has lost from their starting hp. A maximum of 4 total bonus damage can be added this way. 
+
+    ~ 
+
+
+> Vengeance, Severed with Ice[M][6]:
+ Eula creates two ice swords that cleave her opponent, dealing 1 damage each and giving them -2 power for one round. Damage modifiers apply to each instance of damage separately. 
+
+    ~ "Let this grievance be considered settled." 
+
+
+> [Ultimate] Glacial Illumination[M][7]:
+Eula transforms her glacial seal into a lightfall sigil which violently explodes for 6 damage. 
+
+    ~ So the waves roiled, swallowing the crown of the nobles. And ever after did each drop amidst the icy waves reflect a golden crown, each and every droplet of the spray shining with its light.

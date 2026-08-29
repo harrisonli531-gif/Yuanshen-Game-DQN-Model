@@ -1,0 +1,39 @@
+Ayato
+
+Passive:
+
+> Ebb and Flow:
+Using his strategic adaptability, Ayato can discard a card each round, adding that card's power level to his played card. He draws two cards each round.
+
+
+Cards:
+
+> Thousand Slash Cascade[F][1]:
+Ayato manifests his water sword, creating several rapid clean cuts and dealing 2 damage. This skill deals +2 damage if he committed another Thousand Slash Cascade to this.
+
+    ~ Cuts as numerous as the petals drifting upon the water's surface.  
+    [Random idea but too edgy for him: Blood stains the ground like fallen autumn leafs upon water/soil/idk?]
+
+    
+> As the Dew on Morning Blossoms[M][3]:
+As gentle as dewdrops, Ayato takes a moment of quiet to heal 4 hp.
+
+    ~ The camellia blooms anew. 
+
+
+> Lucid Rapids Circling the Summit[M][3]:
+Ayato steadies his breathing and calms his mind, increasing the power of his next played card by 4.
+
+    ~ A moment of respite that belies a torrent of water.
+
+
+> Deluge of Endless Flow[S][2]:
+Channels for a moment before summoning rapid flowing waters, washing away all opposition and dealing 6 damage.
+
+    ~ "When, I wonder, did you come under the illusion that you were winning?"
+
+
+> [Ultimate] Garden of Tranquil Waters[S][5]:
+Unveiling a garden of pure water, Ayato silences the cacophony within. He gains +1 damage for the rest of the game. This card provides +2 power if it is comitted with Ayato's passive. 
+
+    ~ "I can see them, you know. The ripples of your beating heart within this realm of still waters."

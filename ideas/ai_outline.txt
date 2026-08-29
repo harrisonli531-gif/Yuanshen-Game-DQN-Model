@@ -1,0 +1,25 @@
+Each character has a dict mapping card name --> card id(matches index of list) --> model's out Q values
+When AI chooses a card:
+    - Use model to predict Q values (saved as a list)
+    - Iterate through hand --> get card id --> get Q value from list
+    - save index of the card with the highest Q value
+    - Play card with saved index
+
+- Replay buffer is a class that saves the (prev_state, card_id_played, reward_for_action, next_state, next_hand done)
+- We can "snapshot" the state before the cards are revealed and after they're resolved
+- Calc reward function after resolving effects
+- Save new state
+- Push into replay buffer
+
+- When training
+- Use model to calc predicted Q values using prev state, then keep the value based on card id
+- Calc the target q using the model, keep only the ones that are avaliable based on next_hand, find the max
+    - Append both of these into Q_predicted and Q_target
+    - Repeat for next experience in buffer 
+- Calc loss, backwards(), step
+
+
+The model uses attributes to predict the outcome: life, opponent life, turn number, previous played card (or -1 for turn 1), current power bonus, current damage bonus
+
+TO DO
+    - 

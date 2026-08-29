@@ -1,0 +1,48 @@
+Navia
+
+Passive:
+
+> Undisclosed Distribution Channels
+At the start of each round, Navia gains 1 Rosula ammunition shell. 
+
+
+Cards:
+
+> Crystalshot Volley[S][2]:
+Navia consumes all Rosula ammunition shell and unloads her gunbrella shotgun. This card gains +2 power for each Rosula ammunition shell consumed this way and deals [+1/+2/+3/+6/+9/+11] damage 
+if this card wins by [1/2/3/4/5/6+] power.
+
+    ~ Like a flower in full bloom, Navia's umbrella opens. And like the yellow rose's thorns, so too does this flower pack a punch. 
+
+    
+> Blunt Refusal[M][5]:
+Navia unleashes her battle axe and delivers her "Verdict", dealing 2 damage.
+
+    ~ "Sometimes, when someone keeps insisting even when you've already said 'no', you just gotta show that you really mean it!"
+
+
+> Rules for Keeping a Courteous Distance[S][7]:
+With the grace of a noble lady, Navia dashes away, reducing her opponent's accuracy. Their next card's power is lowered by -2. She also loads another Rosula ammunition shell into her 
+gunbrella. 
+
+    ~ [Flavor]
+
+
+> A Lady's Flexible Finnese[F][1]:
+Creating a geo rose shield, Navia blocks up to 4 damage, per attack, dealt to her this turn. If a nondamaging card was played by her opponent, she adapts and instead creates a disruptive 
+attack, reducing their damage by -3 for one turn.
+
+    ~ [Flavor]
+
+
+> Yellow Rose's Thorns[M][6]
+Rose thorns burst from the ground, disarming Navia's opponent and forcing them to discard a random card from their hand.
+
+    ~ "Hold still for a moment, will ya?"
+
+
+> [Ultimate] The Spina's Singing Salvo[S][5]:
+Navia calls for supporting fire from the Spina di Rosula, consuming all Rosula ammunition shells and dealing [1/3/6/10/14] damage based on [1/2/3/4/5+] shells consumed this way. No Rosula 
+ammunition shells are consumed if this card loses. 
+
+    ~ [Flavor]
