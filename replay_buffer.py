@@ -11,12 +11,14 @@ class replay_buffer:
         experience = (prev_state, reward, card_played, next_state, next_hand, done)
         self.buffer.append(experience)
 
-    def sample(self, batch_percent):
-        batch_size = math.floor(len(self.buffer) * batch_percent)
-
+    def sample(self):
         #sample returns as a list of experiences
-        return random.sample(self.buffer, batch_size)
+        return random.sample(self.buffer, 64)
+    
     def print(self):
         for experience in self.buffer:
             print(experience)
+
+    def __len__(self):
+        return len(self.buffer)
     

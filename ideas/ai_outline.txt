@@ -22,4 +22,13 @@ When AI chooses a card:
 The model uses attributes to predict the outcome: life, opponent life, turn number, previous played card (or -1 for turn 1), current power bonus, current damage bonus
 
 TO DO
-    - 
+    - Bug: Episode 37 of 600
+Episode 38 of 600
+Traceback (most recent call last):
+  File "c:\Users\falco\Documents\GitHub\Yuanshen Game DQN Model\model_training.py", line 612, in <module>
+    drawn_card = random.choice(hub.p1_deck)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\random.py", line 351, in choice
+    raise IndexError('Cannot choose from an empty sequence')
+IndexError: Cannot choose from an empty sequence
+I think the game is just too slow and they deck out
+    - Agent evaluation, track win rate across episodes (e.g. tally up num of wins per 100 games and see if the winrate goes up)
