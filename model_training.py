@@ -12,13 +12,14 @@ import torch
 import torch.nn as nn
 import opponent_model as om
 import replay_buffer as buffer
+import torch.optim as optim
 
 def check_input(user_input, valid_inputs):
     '''Takes user input and compares it to possible valid inputs. Loops until user enters something valid.
     user_input is a string while valid_inputs is a tuple'''
     
     user_input = user_input.strip()
-    #print(len(user_input))
+  
     while user_input not in valid_inputs or len(user_input) <= 0:
         try:
             user_input = user_input.lower()
@@ -187,6 +188,7 @@ def display_board_state():
     if (hub.p1_values["hp"]) < 0:
         hub.p1_values["hp"] = 0
 
+    '''
     if p1_board_text is None:
         p1_board_text = " "
     if p2_board_text is None:
@@ -210,6 +212,7 @@ def display_board_state():
         print(f"{hub.p1_hand[i].display_name}[{hub.p1_hand[i].speed}][{hub.p1_hand[i].power}] ", end=" | ")
     print(display_deck_info(p1_char))
     hub.print_space()
+    '''
 
 def play_card_input():
     '''prompts player to either play a card or view character kit, returns the card they played'''
@@ -413,8 +416,13 @@ def reset_game_state():
     hub.p2_values["dmg_mod"][:] = [[+0, 1000]]
     draw_starting_hands()
 
-def pick_card_with_ai(current_state, model):
+def pick_card_with_ai(current_state, model, epsilon=0.1):
     '''Picks a card for the player using the AI model'''
+    #Explore
+    if (random.random() < epsilon):
+        return random.randint(0, len(hub.p1_hand) - 1)
+    
+    #Exploit
     #get q values for all cards in deck
     q_values = model(current_state)
     #iterate through the player's hand and find the card with the highest q value (from the generated q values)
@@ -427,7 +435,32 @@ def pick_card_with_ai(current_state, model):
     #return the card corresponding to the best action
     return best_card_index
 
-        
+def generate_predicted_target_q_values(model, experiences, gamma=0.99): 
+    '''Takes in a number of training experience and testing experiences. Uses prev_state of training experiences to generate predicted q values for each card in the player's deck. Then uses the next_state of the training experience to generate the target q values
+    and next_state of testing experiences to generate target q values.'''
+    predicted_q_list = []
+    target_q_list = []
+    for experience in experiences:
+        #calculate predicted q value
+        generated_q = model (experience[0]) #experience[0] is prev_state
+        predicted_q_list.append(generated_q[experience[2]]) #experience[2] is card_played, get q value for the card played in that experience
+
+        #calculate target q value
+        with torch.no_grad():
+            target_q = 0
+            if (experience[5]): #experience[5] is done
+                target_q = experience[1]
+            else:
+                generated_q = model(experience[3]) #experience[3] is next_state
+                max_q_value = generated_q[experience[4][0]] #experience[4] is next_hand
+                for i in range(len(experience[4])): #find max q value for each playable card
+                    if generated_q[experience[4][i]] > max_q_value:
+                        max_q_value = generated_q[experience[4][i]]
+                target_q = experience[1] + gamma * max_q_value
+            target_q_list.append(target_q)
+
+    return (torch.stack(predicted_q_list), torch.tensor(target_q_list, dtype=torch.float32))
+
 #SET UP GAME VALUES
 
 draw_starting_hands()
@@ -438,18 +471,24 @@ prev_played_card = -1
 
 #SET UP TRAINING RELATED VALUES
 replay_buffer = buffer.replay_buffer(1000)
-episodes = 10
+episodes = 600
 model = om.opponent_model(len(p1_char.deck_list)) #set up the model based on the number of unique cards in the player's deck
 loss_function = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.01)
+epsilon = 0.1
+gamma = 0.99
+
 
 for i in range(episodes):
-    print(f"Episode {i+1} of {episodes}")
+    #print(f"Episode {i+1} of {episodes}")
 
     while hub.p1_values["hp"] > 0 and hub.p2_values["hp"] > 0:
+
+        '''
         hub.print_space()
         print(f"Round: {hub.other_values["round_ num"]})")
         hub.print_space()
-        #input("Enter any key to continue")
+        '''
         
 
         #Start phase: reveal board state, start of round effects, etc
@@ -476,7 +515,7 @@ for i in range(episodes):
         p1_board_text, p2_board_text = " ", " "
         resolve_misc_triggers("post_action", True)
 
-        #print(hub.p2_values["pow_mod"])
+
         
     
         resolve_misc_triggers("pre_determine_winner", False) #determine winner before revealing played cards
@@ -501,7 +540,7 @@ for i in range(episodes):
             p2_board_text = p2_chosen_card.display_name + "[" + p2_chosen_card.speed + "]" + "[" + str(p2_chosen_card.power) + "]" + "(+" + str(p2_pow_mod) + ")"
 
         display_board_state()
-        input("Enter any key to continue")
+        #input("Enter any key to continue") comment out for now
         
         
         
@@ -554,7 +593,7 @@ for i in range(episodes):
         if (not p1_board_text is None and p1_board_text != " ") or (not p2_board_text is None and p2_board_text != " "):
             round_phase = "End Phase"
             display_board_state()
-            #input("Enter any key to continue")
+
 
         
 
@@ -570,9 +609,14 @@ for i in range(episodes):
         except:
             pass
         if draw_bool:
-            drawn_card = random.choice(hub.p1_deck)
-            hub.p1_hand.append(drawn_card)
-            hub.p1_deck.remove(drawn_card)
+            if (len(hub.p1_deck) <= 0):
+                #print("Player 1 deck is empty, cannot draw a card!")
+                #print(hub.other_values["round_ num"])
+                break
+            else:
+                drawn_card = random.choice(hub.p1_deck)
+                hub.p1_hand.append(drawn_card)
+                hub.p1_deck.remove(drawn_card)
 
         #draw a card for opponent
         draw_bool = True
@@ -581,9 +625,14 @@ for i in range(episodes):
         except:
             pass
         if draw_bool:
-            drawn_card = random.choice(hub.p2_deck)
-            hub.p2_hand.append(drawn_card)
-            hub.p2_deck.remove(drawn_card)
+            if (len(hub.p2_deck) <= 0):
+                #print("Player 2 deck is empty, cannot draw a card!")
+                #print(hub.other_values["round_ num"])
+                break
+            else:
+                drawn_card = random.choice(hub.p2_deck)
+                hub.p2_hand.append(drawn_card)
+                hub.p2_deck.remove(drawn_card)
 
         apply_queued_mods()
         clean_up_step()
@@ -592,7 +641,17 @@ for i in range(episodes):
     #Reset the game state
     reset_game_state()
     prev_played_card = -1
-    replay_buffer.print()
+    #replay_buffer.print()
 
     #calculate loss and perform back progagation
+    if (len(replay_buffer.buffer) < 64): #don't try to sample if not enough experiences in the replay buffer
+        continue
+
+    predicted_target_q_values = generate_predicted_target_q_values(model, replay_buffer.sample(), gamma)
+    loss = loss_function(predicted_target_q_values[0], predicted_target_q_values[1])
+    loss.backward()
+    optimizer.step()
+    optimizer.zero_grad()
+    if (i + 1) % 100 == 0:
+        print(f"Episode {i+1} of {episodes} Loss: {loss.item()}")
     
