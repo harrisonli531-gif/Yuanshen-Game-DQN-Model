@@ -10,9 +10,12 @@ import characters.eula as eula
 
 import torch
 import torch.nn as nn
+import copy
 import opponent_model as om
 import replay_buffer as buffer
 import torch.optim as optim
+
+import matplotlib.pyplot as plt
 
 def check_input(user_input, valid_inputs):
     '''Takes user input and compares it to possible valid inputs. Loops until user enters something valid.
@@ -237,7 +240,7 @@ def play_card_input():
         if answer == "2":
             
             print_char_info(roster.index(p1_char_name) + 1)
-            #input("Enter any key to continue")
+        
             hub.print_space()
             
          
@@ -374,15 +377,18 @@ def get_reward(prev_state, next_state, p1_win_bool, p2_win_bool):
     '''Calculates the reward for the player based on the previous state and the next state. Rewards for dealing damage, winning a round, or winning the game'''
     reward = 0
     if next_state[1] <= 0: #opponent has 0 hp
-            reward += 12
-
+            reward = 1
+    elif next_state[0] <= 0: #player has 0 hp
+            reward = -1
     else:
         if prev_state[1] > next_state[1]: #deal damage
-            reward += 1
-        if p1_win_bool:
-            reward += 3
-        if not p2_win_bool:
-            reward += 3
+            reward = 0.1
+        elif prev_state[0] > next_state[0]:
+            reward = -0.1
+        if p1_win_bool and not p2_win_bool:
+            reward += 0.2
+        elif p2_win_bool and not p1_win_bool:
+            reward -= 0.2
     return reward
 
 def draw_starting_hands():
@@ -414,6 +420,10 @@ def reset_game_state():
     hub.p1_values["dmg_mod"][:] = [[+0, 1000]]
     hub.p2_values["pow_mod"][:] = [[+0, 1000]]
     hub.p2_values["dmg_mod"][:] = [[+0, 1000]]
+    for values in (hub.p1_values, hub.p2_values):
+        values["queued_mods"].clear()
+        values["queued_dmg"] = None
+        values["chosen_card"] = None
     draw_starting_hands()
 
 def pick_card_with_ai(current_state, model, epsilon=0.1):
@@ -435,7 +445,7 @@ def pick_card_with_ai(current_state, model, epsilon=0.1):
     #return the card corresponding to the best action
     return best_card_index
 
-def generate_predicted_target_q_values(model, experiences, gamma=0.99): 
+def generate_predicted_target_q_values(model, target_model, experiences, gamma=0.99):
     '''Takes in a number of training experience and testing experiences. Uses prev_state of training experiences to generate predicted q values for each card in the player's deck. Then uses the next_state of the training experience to generate the target q values
     and next_state of testing experiences to generate target q values.'''
     predicted_q_list = []
@@ -448,10 +458,10 @@ def generate_predicted_target_q_values(model, experiences, gamma=0.99):
         #calculate target q value
         with torch.no_grad():
             target_q = 0
-            if (experience[5]): #experience[5] is done
+            if experience[5]: #experience[5] is done
                 target_q = experience[1]
             else:
-                generated_q = model(experience[3]) #experience[3] is next_state
+                generated_q = target_model(experience[3]) #experience[3] is next_state
                 max_q_value = generated_q[experience[4][0]] #experience[4] is next_hand
                 for i in range(len(experience[4])): #find max q value for each playable card
                     if generated_q[experience[4][i]] > max_q_value:
@@ -471,14 +481,35 @@ prev_played_card = -1
 
 #SET UP TRAINING RELATED VALUES
 replay_buffer = buffer.replay_buffer(1000)
-episodes = 600
+episodes = 10000
+load_model = True
+
 model = om.opponent_model(len(p1_char.deck_list)) #set up the model based on the number of unique cards in the player's deck
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+if (load_model == True):
+    checkpoint = torch.load(
+        "model_checkpoint.pth",
+        map_location="cpu",
+        weights_only=True
+    )
+    model.load_state_dict(checkpoint["model_state_dict"])
+    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+target_model = copy.deepcopy(model)
 loss_function = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
-epsilon = 0.1
+batch_size = 64
+target_update_interval = 250
+epsilon_start = 1.0
+epsilon_end = 0.1
+epsilon_decay = 3000
 gamma = 0.99
+num_wins = 0
+max_win_rate = 0
+total_steps = 0
 
 
+y_coordinates = []
 for i in range(episodes):
     #print(f"Episode {i+1} of {episodes}")
 
@@ -501,7 +532,9 @@ for i in range(episodes):
 
         #####Action phase: player choses a card to play
         round_phase = "Action Phase"
-        p1_chosen_card = hub.p1_hand[pick_card_with_ai(prev_state, model)] #PICK CARD HERE 
+        epsilon = epsilon_end + (epsilon_start - epsilon_end) * max(0, 1 - total_steps / epsilon_decay)
+        p1_chosen_card = hub.p1_hand[pick_card_with_ai(prev_state, model, epsilon)] # PICK CARD HERE
+        total_steps += 1
         hub.p1_hand.pop(hub.p1_hand.index(p1_chosen_card))
 
         
@@ -540,7 +573,7 @@ for i in range(episodes):
             p2_board_text = p2_chosen_card.display_name + "[" + p2_chosen_card.speed + "]" + "[" + str(p2_chosen_card.power) + "]" + "(+" + str(p2_pow_mod) + ")"
 
         display_board_state()
-        #input("Enter any key to continue") comment out for now
+        #input("Enter any key to continue") 
         
         
         
@@ -637,6 +670,12 @@ for i in range(episodes):
         apply_queued_mods()
         clean_up_step()
 
+    
+    if hub.p1_values["hp"] > 0 and hub.p2_values["hp"] <= 0:
+        num_wins += 1
+
+   
+
 
     #Reset the game state
     reset_game_state()
@@ -647,11 +686,38 @@ for i in range(episodes):
     if (len(replay_buffer.buffer) < 64): #don't try to sample if not enough experiences in the replay buffer
         continue
 
-    predicted_target_q_values = generate_predicted_target_q_values(model, replay_buffer.sample(), gamma)
+    predicted_target_q_values = generate_predicted_target_q_values(
+        model, target_model, replay_buffer.sample(batch_size), gamma
+    )
     loss = loss_function(predicted_target_q_values[0], predicted_target_q_values[1])
     loss.backward()
+    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
     optimizer.step()
     optimizer.zero_grad()
     if (i + 1) % 100 == 0:
-        print(f"Episode {i+1} of {episodes} Loss: {loss.item()}")
+        win_rate = 100 * num_wins / 100
+        print(f"Episode {i+1} of {episodes} Loss: {loss.item():.4f}, Win Rate: {win_rate:.1f}%, Epsilon: {epsilon:.3f}")
+        y_coordinates.append(win_rate)
+        if win_rate > max_win_rate:
+            max_win_rate = win_rate
+            torch.save({
+                'episode': i + 1,
+                'win_rate': win_rate,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+            }, 'best_model_checkpoint.pth')
+        num_wins = 0
+
+    if (i + 1) % target_update_interval == 0:
+            target_model.load_state_dict(model.state_dict())
+
+x_coordinates = [x for x in range(100, 10100, 100)]
+plt.plot(x_coordinates, y_coordinates)
+plt.show()
+
+checkpoint = {
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+}
+torch.save(checkpoint, 'model_checkpoint.pth')
     

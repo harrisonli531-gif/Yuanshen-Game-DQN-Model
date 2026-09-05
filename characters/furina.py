@@ -162,6 +162,15 @@ encore = card("Encore", "encore", "S", 4, 0, False)
 curtain_call = card("[Ultimate] Curtain Call", "curtain_call", "S", 4, 8, True)
 
 
+## MAP CARD ID TO NUMBER #
+card_id_to_number = {
+    endless_waltz.card_id : 0,
+    solicitation.card_id : 1,
+    spotlight.card_id : 2,
+    encore.card_id : 3,
+    curtain_call.card_id : 4
+}
+
 
 #Resolution text
 def resolution_text(card_id, base_dmg, win_bool):
