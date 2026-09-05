@@ -101,6 +101,15 @@ lucid_rapids = card("Lucid Rapids Circling the Summit", "lucid_rapids", "M", 3, 
 #[Ultimate] Garden of Tranquil Waters[S][5]
 garden = card("[Ultimate] Garden of Tranquil Waters", "garden", "S", 5, 0, False)
 
+## MAP CARD ID TO NUMBER #
+card_id_to_number = {
+    thousand_slash.card_id : 0,
+    morning_blossoms.card_id : 1,
+    deluge.card_id : 2,
+    lucid_rapids.card_id : 3,
+    garden.card_id : 4
+}
+
 #Resolution text
 def resolution_text(card_id, base_dmg, win_bool):
     '''Returns either the dmg dealt and false for unique_bool or the unique resolution text and true'''

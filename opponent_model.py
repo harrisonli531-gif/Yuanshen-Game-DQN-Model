@@ -9,21 +9,11 @@ class opponent_model(nn.Module):
         for each possible card it can choose to play'''
         super(opponent_model, self).__init__()
         self.layers = nn.Sequential(
-            nn.Linear(6, 16),
+            nn.Linear(6, 30),
             nn.ReLU(),
-            nn.Linear(16, 32),
+            nn.Linear(30, 15),
             nn.ReLU(),
-            nn.Linear(32, 64),
-            nn.ReLU(),
-            nn.Linear(64, 128),
-            nn.ReLU(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, 16),
-            nn.ReLU(),
-            nn.Linear(16, n)
+            nn.Linear(15, n),
         )
 
     def forward(self, x):
